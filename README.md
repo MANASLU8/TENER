@@ -1,3 +1,7 @@
+## Train tener without cache
+```sh
+rm -rf caches/ && python train_tener_en.py --dataset conll2003
+```
 ## TENER: Adapting Transformer Encoder for Named Entity Recognition
 
 

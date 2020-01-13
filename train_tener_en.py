@@ -60,10 +60,11 @@ dim_feedforward = int(2 * d_model)
 def load_data():
     # 替换路径
     if dataset == 'conll2003':
+        root_dir = '../data/conll2003ru'
         # conll2003的lr不能超过0.002
-        paths = {'test': "../data/conll2003/test.txt",
-                 'train': "../data/conll2003/train.txt",
-                 'dev': "../data/conll2003/dev.txt"}
+        paths = {'test': f"{root_dir}/test.txt",
+                 'train': f"{root_dir}/train.txt",
+                 'dev': f"{root_dir}/dev.txt"}
         data = Conll2003NERPipe(encoding_type=encoding_type).process_from_file(paths)
     elif dataset == 'en-ontonotes':
         # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
