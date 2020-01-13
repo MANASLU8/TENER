@@ -1,6 +1,13 @@
-## Train tener without cache
+## Set up russian dataset
 ```sh
-rm -rf caches/ && python train_tener_en.py --dataset conll2003
+mkdir -p ../data/conll2003ru
+cp conll2003ru.txt ../data/conll2003ru/train.txt
+ln ../data/conll2003ru/train.txt ../data/conll2003ru/test.txt
+ln ../data/conll2003ru/train.txt ../data/conll2003ru/dev.txt
+```
+## Train tener without cache on the russian dataset
+```sh
+rm -rf caches/ && python train_tener_en.py --dataset conll2003ru
 ```
 ## TENER: Adapting Transformer Encoder for Named Entity Recognition
 
