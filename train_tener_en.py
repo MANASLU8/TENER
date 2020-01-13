@@ -15,13 +15,14 @@ from modules.callbacks import EvaluateCallback
 device = 0
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--dataset', type=str, default='en-ontonotes', choices=['conll2003', 'en-ontonotes'])
+parser.add_argument('--dataset', type=str, default='en-ontonotes', choices=['conll2003', 'en-ontonotes', 'conll2003ru'])
 
 args = parser.parse_args()
 
 dataset = args.dataset
 
-if dataset == 'conll2003':
+conll_dataset_names = ['conll2003', 'conll2003ru']
+if dataset in conll_dataset_names:
     n_heads = 14
     head_dims = 128
     num_layers = 2
@@ -54,18 +55,23 @@ name = 'caches/{}_{}_{}_{}_{}.pkl'.format(dataset, model_type, encoding_type, ch
 d_model = n_heads * head_dims
 dim_feedforward = int(2 * d_model)
 
-
+def read_conll_dataset(root_dir):
+    # conll2003的lr不能超过0.002
+    paths = {
+                'test': f"{root_dir}/test.txt",
+                'train': f"{root_dir}/train.txt",
+                'dev': f"{root_dir}/dev.txt"
+             }
+    data = Conll2003NERPipe(encoding_type=encoding_type).process_from_file(paths)
+    return data
 
 @cache_results(name, _refresh=False)
 def load_data():
     # 替换路径
     if dataset == 'conll2003':
-        root_dir = '../data/conll2003ru'
-        # conll2003的lr不能超过0.002
-        paths = {'test': f"{root_dir}/test.txt",
-                 'train': f"{root_dir}/train.txt",
-                 'dev': f"{root_dir}/dev.txt"}
-        data = Conll2003NERPipe(encoding_type=encoding_type).process_from_file(paths)
+        data = read_conll_dataset('../data/conll2003')
+    if dataset == 'conll2003ru':
+        data = read_conll_dataset('../data/conll2003ru')
     elif dataset == 'en-ontonotes':
         # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
         paths = '../data/en-ontonotes/english'
