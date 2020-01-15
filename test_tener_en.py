@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='en-ontonotes', choices=list(set(['en-ontonotes'] + CONLL_CORPORA + RU_CORPORA)))
 parser.add_argument('--filename', type=str, default='best_TENER_f_2020-01-15-17-40-12')
 parser.add_argument('--folderpath', type=str, default='/home/dima/models/ner')
+parser.add_argument('--subset', type=str, default='test')
 
 args = parser.parse_args()
 MODEL_PATH = args.folderpath
@@ -142,7 +143,7 @@ trainer = Trainer(data_bundle.get_dataset('train'), model, optimizer, batch_size
                   dev_batch_size=batch_size*5, callbacks=callbacks, device=device, test_use_tqdm=False,
                   use_tqdm=True, print_every=300, save_path=MODEL_PATH)
 
-tester = Tester(data_bundle.get_dataset('test'), model, metrics_to_test, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True)
+tester = Tester(data_bundle.get_dataset(args.subset), model, metrics_to_test, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True)
 
 load_succeed = trainer._load_model(model, args.filename)
 
