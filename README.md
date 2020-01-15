@@ -9,6 +9,11 @@ ln ../data/conll2003ru/train.txt ../data/conll2003ru/dev.txt
 ```sh
 rm -rf caches/ && python train_tener_en.py --dataset conll2003ru
 ```
+After line `81` in file `static_embedding.py` you should set path for the russian embeddings:  
+```sh
+elif model_dir_or_name == 'ru':
+            model_path = '/home/nami/models/ArModel100w2v.txt'
+```
 ## TENER: Adapting Transformer Encoder for Named Entity Recognition
 
 
