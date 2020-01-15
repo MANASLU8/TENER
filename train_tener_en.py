@@ -13,8 +13,8 @@ import argparse
 from modules.callbacks import EvaluateCallback
 
 MODEL_PATH = 'tener-conll2003ru-ar100w2v.bin'
-RU_CORPORA = ['conll2003ru', 'conll2003ru-distinct']
-CONLL_CORPORA = ['conll2003', 'conll2003ru', 'conll2003ru-distinct']
+RU_CORPORA = ['conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct']
+CONLL_CORPORA = ['conll2003', 'conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct']
 
 device = 0
 parser = argparse.ArgumentParser()
@@ -77,6 +77,8 @@ def load_data():
         data = read_conll_dataset('../data/conll2003ru')
     elif dataset == 'conll2003ru-distinct':
         data = read_conll_dataset('../data/conll2003ru-distinct')
+    elif dataset == 'conll2003ru-super-distinct':
+        data = read_conll_dataset('../data/conll2003ru-super-distinct')
     elif dataset == 'en-ontonotes':
         # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
         paths = '../data/en-ontonotes/english'

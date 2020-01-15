@@ -76,8 +76,12 @@ def load_data():
     # 替换路径
     if dataset == 'conll2003':
         data = read_conll_dataset('../data/conll2003')
-    if dataset == 'conll2003ru':
+    elif dataset == 'conll2003ru':
         data = read_conll_dataset('../data/conll2003ru')
+    elif dataset == 'conll2003ru-distinct':
+        data = read_conll_dataset('../data/conll2003ru-distinct')
+    elif dataset == 'conll2003ru-super-distinct':
+        data = read_conll_dataset('../data/conll2003ru-super-distinct')
     elif dataset == 'en-ontonotes':
         # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
         paths = '../data/en-ontonotes/english'
