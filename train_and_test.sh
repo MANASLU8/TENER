@@ -1,0 +1,2 @@
+python train_tener_en.py --dataset conll2003ru-distinct
+python test_tener_en.py --dataset conll2003ru-distinct --filename best_TENER_f_2020-01-15-19-11-45 --folderpath /home/nami/TENER/tener-conll2003ru-ar100w2v.bin --subset dev
