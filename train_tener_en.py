@@ -12,6 +12,8 @@ from modules.pipe import Conll2003NERPipe
 import argparse
 from modules.callbacks import EvaluateCallback
 
+MODEL_PATH = 'tener-conll2003ru-ar100w2v.bin'
+
 device = 0
 parser = argparse.ArgumentParser()
 
@@ -131,5 +133,5 @@ trainer = Trainer(data_bundle.get_dataset('train'), model, optimizer, batch_size
                   num_workers=2, n_epochs=100, dev_data=data_bundle.get_dataset('dev'),
                   metrics=SpanFPreRecMetric(tag_vocab=data_bundle.get_vocab('target'), encoding_type=encoding_type),
                   dev_batch_size=batch_size*5, callbacks=callbacks, device=device, test_use_tqdm=False,
-                  use_tqdm=True, print_every=300, save_path=None)
+                  use_tqdm=True, print_every=300, save_path=MODEL_PATH)
 trainer.train(load_best_model=False)
