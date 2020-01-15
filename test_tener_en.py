@@ -1,8 +1,9 @@
 from models.TENER import TENER
 from fastNLP.embeddings import CNNCharEmbedding
+import fastNLP
 from fastNLP import cache_results
-from fastNLP import Trainer, GradientClipCallback, WarmupCallback
-from torch import optim
+from fastNLP import Trainer, Tester, GradientClipCallback, WarmupCallback
+from torch import optim, load
 from fastNLP import SpanFPreRecMetric, BucketSampler
 from fastNLP.io.pipe.conll import OntoNotesNERPipe
 from fastNLP.embeddings import StaticEmbedding, StackEmbedding, LSTMCharEmbedding
@@ -12,17 +13,19 @@ from modules.pipe import Conll2003NERPipe
 import argparse
 from modules.callbacks import EvaluateCallback
 
-MODEL_PATH = 'tener-conll2003ru-ar100w2v.bin'
-RU_CORPORA = ['conll2003ru', 'conll2003ru-distinct']
-CONLL_CORPORA = ['conll2003', 'conll2003ru', 'conll2003ru-distinct']
+from train_tener_en import RU_CORPORA, CONLL_CORPORA
+
+metrics_to_test = [fastNLP.core.metrics.AccuracyMetric()]
 
 device = 0
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--dataset', type=str, default='en-ontonotes', choices=list(set(['en-ontonotes'] + CONLL_CORPORA + RU_CORPORA)))
+parser.add_argument('--filename', type=str, default='best_TENER_f_2020-01-15-17-40-12')
+parser.add_argument('--folderpath', type=str, default='/home/dima/models/ner')
 
 args = parser.parse_args()
-
+MODEL_PATH = args.folderpath
 dataset = args.dataset
 
 if dataset in CONLL_CORPORA:
@@ -108,7 +111,6 @@ def load_data():
     return data, embed
 
 data_bundle, embed = load_data()
-print(data_bundle)
 
 model = TENER(tag_vocab=data_bundle.get_vocab('target'), embed=embed, num_layers=num_layers,
                        d_model=d_model, n_head=n_heads,
@@ -135,4 +137,33 @@ trainer = Trainer(data_bundle.get_dataset('train'), model, optimizer, batch_size
                   metrics=SpanFPreRecMetric(tag_vocab=data_bundle.get_vocab('target'), encoding_type=encoding_type),
                   dev_batch_size=batch_size*5, callbacks=callbacks, device=device, test_use_tqdm=False,
                   use_tqdm=True, print_every=300, save_path=MODEL_PATH)
-trainer.train(load_best_model=False)
+
+tester = Tester(data_bundle.get_dataset('test'), model, metrics_to_test, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True)
+
+load_succeed = trainer._load_model(model, args.filename)
+
+if load_succeed:
+    print("Reloaded the best model.")
+else:
+    print("Fail to reload best model.")
+
+tester.test()
+
+# loaded_model = load(MODEL_PATH)
+# print(loaded_model)
+# print(model.load(loaded_model))
+#model.eval()
+
+# tester = Tester(data_bundle.get_dataset('test'), model, metrics, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True):
+
+# optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
+
+# callbacks = []
+# clip_callback = GradientClipCallback(clip_type='value', clip_value=5)
+# evaluate_callback = EvaluateCallback(data_bundle.get_dataset('test'))
+
+# if warmup_steps>0:
+#     warmup_callback = WarmupCallback(warmup_steps, schedule='linear')
+#     callbacks.append(warmup_callback)
+# callbacks.extend([clip_callback, evaluate_callback])
+
