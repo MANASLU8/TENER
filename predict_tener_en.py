@@ -3,6 +3,7 @@ from fastNLP.embeddings import CNNCharEmbedding
 import fastNLP
 from fastNLP import cache_results
 from fastNLP import Trainer, Tester, GradientClipCallback, WarmupCallback
+from fastNLP.core.predictor import Predictor
 from torch import optim, load
 from fastNLP import SpanFPreRecMetric, BucketSampler
 from fastNLP.io.pipe.conll import OntoNotesNERPipe
@@ -13,7 +14,9 @@ from modules.pipe import Conll2003NERPipe
 import argparse
 from modules.callbacks import EvaluateCallback
 
-from train_tener_en import RU_CORPORA, CONLL_CORPORA, get_dataset
+from train_tener_en import RU_CORPORA, CONLL_CORPORA
+
+from utils.prediction import predict
 
 metrics_to_test = [fastNLP.core.metrics.AccuracyMetric()]
 
@@ -24,6 +27,7 @@ parser.add_argument('--dataset', type=str, default='en-ontonotes', choices=list(
 parser.add_argument('--filename', type=str, default='best_TENER_f_2020-01-15-17-40-12')
 parser.add_argument('--folderpath', type=str, default='/home/dima/models/ner')
 parser.add_argument('--subset', type=str, default='test')
+parser.add_argument('--output', type=str, default='predictions/test.txt')
 
 args = parser.parse_args()
 MODEL_PATH = args.folderpath
@@ -61,7 +65,6 @@ encoding_type = 'bioes'
 name = 'caches/{}_{}_{}_{}_{}.pkl'.format(dataset, model_type, encoding_type, char_type, normalize_embed)
 d_model = n_heads * head_dims
 dim_feedforward = int(2 * d_model)
-
 def read_conll_dataset(root_dir):
     # conll2003的lr不能超过0.002
     paths = {
@@ -75,7 +78,18 @@ def read_conll_dataset(root_dir):
 @cache_results(name, _refresh=False)
 def load_data():
     # 替换路径
-    data = get_dataset(dataset)
+    if dataset == 'conll2003':
+        data = read_conll_dataset('../data/conll2003')
+    elif dataset == 'conll2003ru':
+        data = read_conll_dataset('../data/conll2003ru')
+    elif dataset == 'conll2003ru-distinct':
+        data = read_conll_dataset('../data/conll2003ru-distinct')
+    elif dataset == 'conll2003ru-super-distinct':
+        data = read_conll_dataset('../data/conll2003ru-super-distinct')
+    elif dataset == 'en-ontonotes':
+        # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
+        paths = '../data/en-ontonotes/english'
+        data = OntoNotesNERPipe(encoding_type=encoding_type).process_from_file(paths)
     char_embed = None
     if char_type == 'cnn':
         char_embed = CNNCharEmbedding(vocab=data.get_vocab('words'), embed_size=30, char_emb_size=30, filter_nums=[30],
@@ -105,7 +119,9 @@ def load_data():
     return data, embed
 
 data_bundle, embed = load_data()
-
+# print(data_bundle.vocabs['target'].to_word(1))
+# print(dir(data_bundle.vocabs['target']))
+# ss
 model = TENER(tag_vocab=data_bundle.get_vocab('target'), embed=embed, num_layers=num_layers,
                        d_model=d_model, n_head=n_heads,
                        feedforward_dim=dim_feedforward, dropout=dropout,
@@ -132,8 +148,6 @@ trainer = Trainer(data_bundle.get_dataset('train'), model, optimizer, batch_size
                   dev_batch_size=batch_size*5, callbacks=callbacks, device=device, test_use_tqdm=False,
                   use_tqdm=True, print_every=300, save_path=MODEL_PATH)
 
-tester = Tester(data_bundle.get_dataset(args.subset), model, metrics_to_test, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True)
-
 load_succeed = trainer._load_model(model, args.filename)
 
 if load_succeed:
@@ -141,7 +155,24 @@ if load_succeed:
 else:
     print("Fail to reload best model.")
 
-tester.test()
+subset_for_prediction = data_bundle.get_dataset(args.subset)
+
+predict(model, subset_for_prediction, data_bundle.vocabs["target"], args.output)
+
+#print(dir(subset_for_prediction))
+
+# tester = Tester(data_bundle.get_dataset(args.subset), model, metrics_to_test, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True)
+
+# load_succeed = trainer._load_model(model, args.filename)
+
+# if load_succeed:
+#     print("Reloaded the best model.")
+# else:
+#     print("Fail to reload best model.")
+
+# tester.test()
+
+####
 
 # loaded_model = load(MODEL_PATH)
 # print(loaded_model)

@@ -14,7 +14,33 @@ from modules.callbacks import EvaluateCallback
 
 MODEL_PATH = 'tener-conll2003ru-ar100w2v.bin'
 RU_CORPORA = ['conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct']
-CONLL_CORPORA = ['conll2003', 'conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct']
+CONLL_CORPORA = ['conll2003', 'conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct', 'conll2003ru-bio-super-distinct']
+
+def read_conll_dataset(root_dir):
+      # conll2003的lr不能超过0.002
+      paths = {
+                  'test': f"{root_dir}/test.txt",
+                  'train': f"{root_dir}/train.txt",
+                  'dev': f"{root_dir}/dev.txt"
+               }
+      data = Conll2003NERPipe(encoding_type=encoding_type).process_from_file(paths)
+      return data
+
+def get_dataset(dataset):
+  if dataset == 'conll2003':
+      return read_conll_dataset('../data/conll2003')
+  if dataset == 'conll2003ru':
+      return read_conll_dataset('../data/conll2003ru')
+  elif dataset == 'conll2003ru-distinct':
+      return read_conll_dataset('../data/conll2003ru-distinct')
+  elif dataset == 'conll2003ru-super-distinct':
+      return read_conll_dataset('../data/conll2003ru-super-distinct')
+  elif dataset == 'conll2003ru-bio-super-distinct':
+      return read_conll_dataset('../data/conll2003ru-bio-super-distinct')
+  elif dataset == 'en-ontonotes':
+      # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
+      paths = '../data/en-ontonotes/english'
+      return OntoNotesNERPipe(encoding_type=encoding_type).process_from_file(paths)
 
 if __name__ == '__main__':
 
@@ -60,31 +86,12 @@ if __name__ == '__main__':
   d_model = n_heads * head_dims
   dim_feedforward = int(2 * d_model)
 
-  def read_conll_dataset(root_dir):
-      # conll2003的lr不能超过0.002
-      paths = {
-                  'test': f"{root_dir}/test.txt",
-                  'train': f"{root_dir}/train.txt",
-                  'dev': f"{root_dir}/dev.txt"
-               }
-      data = Conll2003NERPipe(encoding_type=encoding_type).process_from_file(paths)
-      return data
+  
 
   @cache_results(name, _refresh=False)
   def load_data():
       # 替换路径
-      if dataset == 'conll2003':
-          data = read_conll_dataset('../data/conll2003')
-      elif dataset == 'conll2003ru':
-          data = read_conll_dataset('../data/conll2003ru')
-      elif dataset == 'conll2003ru-distinct':
-          data = read_conll_dataset('../data/conll2003ru-distinct')
-      elif dataset == 'conll2003ru-super-distinct':
-          data = read_conll_dataset('../data/conll2003ru-super-distinct')
-      elif dataset == 'en-ontonotes':
-          # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
-          paths = '../data/en-ontonotes/english'
-          data = OntoNotesNERPipe(encoding_type=encoding_type).process_from_file(paths)
+      data = get_dataset(dataset)
       char_embed = None
       if char_type == 'cnn':
           char_embed = CNNCharEmbedding(vocab=data.get_vocab('words'), embed_size=30, char_emb_size=30, filter_nums=[30],
