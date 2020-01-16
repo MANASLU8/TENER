@@ -81,55 +81,59 @@ STANFORD_DEPS_FILE = args.input
 POS_FILE = args.output
 PHRASE_TYPES_FILE = args.output
 
-sentences = []
-sentence = []
-for line in read_lines(STANFORD_DEPS_FILE):
-	if not line.startswith('Sentence'):
-		sentence.append(line)
-		#sentence.append(decode_dependency(line))
-	else:
-		sentence = sentence[3:-1]
-		#print(sentence)
-		if len(sentence) == 0:
-			continue
-		#print(sentence[sentence.index('') + 2:])
-		#print(sentence[3:sentence.index('')])
-		#print(sentence[:sentence.index('')])
-		# sentences.append({
-		# 	'tokens': ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')])),
-		# 	'dependencies': list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:]))
-		# })
-		sentences.append(list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:])))
-		sentence = []
-sentence = sentence[3:-1]
-sentences.append(list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:])))
-#print(sentences[-1])
-#print(len(sentences))
-#print(sentences[0])
+def structure_stanford_output(input_file, output_file):
+	sentences = []
+	sentence = []
+	for line in read_lines(input_file):
+		if not line.startswith('Sentence'):
+			sentence.append(line)
+			#sentence.append(decode_dependency(line))
+		else:
+			sentence = sentence[3:-1]
+			#print(sentence)
+			if len(sentence) == 0:
+				continue
+			#print(sentence[sentence.index('') + 2:])
+			#print(sentence[3:sentence.index('')])
+			#print(sentence[:sentence.index('')])
+			# sentences.append({
+			# 	'tokens': ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')])),
+			# 	'dependencies': list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:]))
+			# })
+			sentences.append(list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:])))
+			sentence = []
+	sentence = sentence[3:-1]
+	sentences.append(list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:])))
+	#print(sentences[-1])
+	#print(len(sentences))
+	#print(sentences[0])
 
-dep_tree = []
-phrase_types = ['-DOCSTART- -X- -X- O', '']
-for sentence in sentences:
-	root = ('ROOT', 0, 'ROOT')
-	#print(f'({root[0]}//{root[1]}')
-	make_dep_tree(root, sentence, 0, dep_tree)
-	dep_tree.append('')
-	for phrase_type in get_phrase_types(sentence):
-		phrase_types.append(phrase_type)
-	# Add empty line to split sentences
-	phrase_types.append('')
+	dep_tree = []
+	phrase_types = ['-DOCSTART- -X- -X- O', '']
+	for sentence in sentences:
+		root = ('ROOT', 0, 'ROOT')
+		#print(f'({root[0]}//{root[1]}')
+		make_dep_tree(root, sentence, 0, dep_tree)
+		dep_tree.append('')
+		for phrase_type in get_phrase_types(sentence):
+			phrase_types.append(phrase_type)
+		# Add empty line to split sentences
+		phrase_types.append('')
+		#print(dep_tree)
 	#print(dep_tree)
-#print(dep_tree)
-#print(list())
-#print(len(phrase_types))
-#write_lines("dependency_trees.txt", dep_tree)
-#read_lines(POS_FILE)
+	#print(list())
+	#print(len(phrase_types))
+	#write_lines("dependency_trees.txt", dep_tree)
+	#read_lines(POS_FILE)
 
 
-write_lines(PHRASE_TYPES_FILE, phrase_types)
+	write_lines(output_file, phrase_types)
 
 
-#pos_tags = read_pos(POS_FILE)
-#print(len(pos_tags))
-#print([i for i in pos_tags if len(i) == 2])
-#print(')')
+	#pos_tags = read_pos(POS_FILE)
+	#print(len(pos_tags))
+	#print([i for i in pos_tags if len(i) == 2])
+	#print(')')
+
+if __name__ == "__main__":
+	structure_stanford_output(STANFORD_DEPS_FILE, PHRASE_TYPES_FILE)

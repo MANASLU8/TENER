@@ -1,16 +1,47 @@
-import argparse
+import argparse, os
 from utils.file_operations import read_lines
+from shutil import copyfile, rmtree
+from predict_tener_en import make_predictions
+from java_wrapper import extract_dependencies_via_stanford
+structure_stanford_results = __import__('structure-stanford-results')
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--text', type=str, default='raw/text.txt')
-# parser.add_argument('--filename', type=str, default='best_TENER_f_2020-01-15-17-40-12')
-# parser.add_argument('--folderpath', type=str, default='/home/dima/models/ner')
-# parser.add_argument('--subset', type=str, default='test')
-# parser.add_argument('--output', type=str, default='predictions/test.txt')
+parser.add_argument('--input', type=str, default='raw/text.txt')
+parser.add_argument('--output', type=str, default='raw/text-entities.txt')
+
+TMP_DATASET_DIR = 'tmp/conll2003ru-predicted'
 
 args = parser.parse_args()
 
-text = '\n'.join(read_lines(args.text))
+print("Extracting dependencies...")
+# Extract dependencies
+extract_dependencies_via_stanford(
+	classpath = '/home/dima/CoreNLP/target/classes',
+	embeddings = '/home/dima/models/ArModel100.txt',
+	dependencies_model = '/home/dima/models/nndep.rus.modelAr100HS400.txt.gz',
+	pos_model = '/home/dima/models/russian-ud-pos.tagger',
+	input = args.input
+)
 
-print(text)
+print("Formatting dependencies...")
+# Format dependencies
+if not os.path.isdir(TMP_DATASET_DIR):
+	os.mkdir(TMP_DATASET_DIR)
+structure_stanford_results.structure_stanford_output(f'{args.input.split("/")[-1]}.out', f'{TMP_DATASET_DIR}/train.txt')
+copyfile(f'{TMP_DATASET_DIR}/train.txt', f'{TMP_DATASET_DIR}/test.txt')
+copyfile(f'{TMP_DATASET_DIR}/train.txt', f'{TMP_DATASET_DIR}/dev.txt')
+
+print("Making predictions...")
+# Make predictions
+make_predictions(
+	dataset_for_loading = 'conll2003ru-super-distinct',
+	dataset_for_prediction = TMP_DATASET_DIR,
+	filename = 'two-third',
+	folderpath = '/home/dima/models/ner',
+	subset_name_for_prediction = 'dev',
+	output = args.output
+)
+
+rmtree(TMP_DATASET_DIR)
+os.remove(f'{args.input.split("/")[-1]}.out')

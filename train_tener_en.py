@@ -16,6 +16,8 @@ MODEL_PATH = 'tener-conll2003ru-ar100w2v.bin'
 RU_CORPORA = ['conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct']
 CONLL_CORPORA = ['conll2003', 'conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct', 'conll2003ru-bio-super-distinct']
 
+encoding_type = 'bioes'
+
 def read_conll_dataset(root_dir):
       # conll2003的lr不能超过0.002
       paths = {
@@ -81,7 +83,7 @@ if __name__ == '__main__':
   dropout=0.15
   fc_dropout=0.4
 
-  encoding_type = 'bioes'
+  
   name = 'caches/{}_{}_{}_{}_{}.pkl'.format(dataset, model_type, encoding_type, char_type, normalize_embed)
   d_model = n_heads * head_dims
   dim_feedforward = int(2 * d_model)
