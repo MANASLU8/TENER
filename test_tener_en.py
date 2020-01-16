@@ -132,7 +132,10 @@ trainer = Trainer(data_bundle.get_dataset('train'), model, optimizer, batch_size
                   dev_batch_size=batch_size*5, callbacks=callbacks, device=device, test_use_tqdm=False,
                   use_tqdm=True, print_every=300, save_path=MODEL_PATH)
 
-tester = Tester(data_bundle.get_dataset(args.subset), model, metrics_to_test, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True)
+databundle_for_test = read_conll_dataset('tmp/conll2003ru-predicted')
+databundle_for_test.rename_field('words', 'chars')
+
+tester = Tester(databundle_for_test.get_dataset(args.subset), model, metrics_to_test, batch_size=16, num_workers=0, device=None, verbose=1, use_tqdm=True)
 
 load_succeed = trainer._load_model(model, args.filename)
 

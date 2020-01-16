@@ -43,5 +43,5 @@ make_predictions(
 	output = args.output
 )
 
-rmtree(TMP_DATASET_DIR)
-os.remove(f'{args.input.split("/")[-1]}.out')
+#rmtree(TMP_DATASET_DIR)
+#os.remove(f'{args.input.split("/")[-1]}.out')
