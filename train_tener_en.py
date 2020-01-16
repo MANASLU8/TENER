@@ -13,7 +13,7 @@ import argparse
 from modules.callbacks import EvaluateCallback
 
 MODEL_PATH = 'tener-conll2003ru-ar100w2v.bin'
-RU_CORPORA = ['conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct']
+RU_CORPORA = ['conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct', 'conll2003ru-bio-super-distinct']
 CONLL_CORPORA = ['conll2003', 'conll2003ru', 'conll2003ru-distinct', 'conll2003ru-super-distinct', 'conll2003ru-bio-super-distinct']
 
 encoding_type = 'bioes'

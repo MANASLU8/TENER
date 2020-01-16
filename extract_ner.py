@@ -35,9 +35,9 @@ copyfile(f'{TMP_DATASET_DIR}/train.txt', f'{TMP_DATASET_DIR}/dev.txt')
 print("Making predictions...")
 # Make predictions
 make_predictions(
-	dataset_for_loading = 'conll2003ru-super-distinct',
+	dataset_for_loading = 'conll2003ru-bio-super-distinct',
 	dataset_for_prediction = TMP_DATASET_DIR,
-	filename = 'two-third',
+	filename = 'bio',
 	folderpath = '/home/dima/models/ner',
 	subset_name_for_prediction = 'dev',
 	output = args.output
