@@ -14,6 +14,8 @@ import torch.nn.functional as F
 from utils.dataset_loaders import read_dataset
 from fastNLP.core.predictor import Predictor
 from utils.file_operations import write_lines
+from utils.formatter import flatten_prediction_results, get_unique_targets
+from metrics.average_precision import get_average_precision
 
 class TENER(nn.Module):
     def __init__(self, config, data_bundle, embed, num_layers, d_model, n_head, feedforward_dim, dropout,
@@ -124,7 +126,30 @@ class TENER(nn.Module):
 
         # Perform testing
         tester = Tester(databundle_for_test.get_dataset(subset), self, metrics_to_test, batch_size=self.config['batch_size'], num_workers=0, device=None, verbose=1, use_tqdm=True)
-        return tester.test()
+        tester.test()
+
+        flattened_true_entities, flattened_predicted_entities = flatten_prediction_results(
+            self.data_bundle,
+            databundle_for_test,
+            subset,
+            self._predict(subset_for_prediction = databundle_for_test.get_dataset(subset), targets = self.data_bundle.vocabs["target"], filename = None)
+        )
+
+        print("Precision per label:")
+        labels = get_unique_targets(self.data_bundle.vocabs["target"])
+        scores = get_average_precision(y_true=flattened_true_entities, y_pred=flattened_predicted_entities, labels=labels, average=None)
+        for label, score in zip(labels, scores):
+            print(f'{label:10s} {score:.2f}')
+        
+        #print(get_average_precision(flattened_true_entities, flattened_predicted_entities, 'weighted'))
+        #for averaging_method in ['micro', 'macro', 'weighted', 'samples']:
+            #print(averaging_method)
+            #print(get_average_precision(flattened_true_entities, flattened_predicted_entities, averaging_method))
+
+        # print(len(flattened_predicted_entities))
+        # print(len(flattened_true_entities))
+
+
 
     def _predict(self, subset_for_prediction, targets, filename):
         predictor = Predictor(self)
@@ -143,7 +168,8 @@ class TENER(nn.Module):
           for pair in zip(words, labels):
             lines.append('\t'.join(pair))
           lines.append('')
-        write_lines(filename, lines)
+        if filename is not None:
+            write_lines(filename, lines)
         return lines
 
     def export_predictions(self, dataset, subset, output_file):
