@@ -1,0 +1,13 @@
+ru:
+  - conll2003ru
+  - conll2003ru-distinct
+  - conll2003ru-super-distinct
+  - conll2003ru-bio-super-distinct
+conll:
+  - conll2003
+  - conll2003ru
+  - conll2003ru-distinct
+  - conll2003ru-super-distinct
+  - conll2003ru-bio-super-distinct
+others:
+  - en-ontonotes

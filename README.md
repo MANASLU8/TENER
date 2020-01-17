@@ -5,9 +5,9 @@ cp conll2003ru.txt ../data/conll2003ru/train.txt
 ln ../data/conll2003ru/train.txt ../data/conll2003ru/test.txt
 ln ../data/conll2003ru/train.txt ../data/conll2003ru/dev.txt
 ```
-## Train tener without cache on the russian dataset
+## Train
 ```sh
-rm -rf caches/ && python train_tener_en.py --dataset conll2003ru
+python train_tener_ru.py --training_dataset conll2003ru-bio-super-distinct --models_folder /home/dima/models/ner
 ```
 After line `81` in file `static_embedding.py` you should set path for the russian embeddings:  
 ```sh
@@ -15,13 +15,14 @@ elif model_dir_or_name == 'ru':
             model_path = '/home/nami/models/ArModel100w2v.txt'
 ```
 ## Test
-To train and test run commands:  
 ```sh
-python train_tener_en.py --dataset conll2003ru-super-distinct
-python test_tener_en.py --dataset conll2003ru-super-distinct --filename best_TENER_f_2020-01-15-19-11-45 --folderpath /home/nami/TENER/tener-conll2003ru-ar100w2v.bin --subset dev
+python test_tener_ru.py --training_dataset conll2003ru-bio-super-distinct --testing_dataset conll2003ru-bio-super-distinct --model_file /home/dima/models/ner/bio  --subset dev
 ```
-## Pipeline
-To annotate raw russian text:  
+## Predict on dataset
+```sh
+python predict_tener_ru.py --training_dataset conll2003ru-bio-super-distinct --prediction_dataset conll2003ru-bio-super-distinct --model_file /home/dima/models/ner/bio  --subset dev --output_file preds.txt
+```
+## Predict on raw text
 ```sh
 python extract_ner.py --input raw/text.txt --output predictions.txt
 ```
