@@ -5,7 +5,7 @@ cp conll2003ru.txt ../data/conll2003ru/train.txt
 ln ../data/conll2003ru/train.txt ../data/conll2003ru/test.txt
 ln ../data/conll2003ru/train.txt ../data/conll2003ru/dev.txt
 ```
-## Train
+## Train locally
 ```sh
 python train_tener_ru.py --training_dataset conll2003ru-bio-super-distinct --models_folder /home/dima/models/ner
 ```
@@ -14,6 +14,8 @@ After line `81` in file `static_embedding.py` you should set path for the russia
 elif model_dir_or_name == 'ru':
             model_path = '/home/nami/models/ArModel100w2v.txt'
 ```
+## Train on google's GPU
+Jupyter notebook is available [here](https://colab.research.google.com/drive/1pNqk8A2e4jpmIXD5Rkjks5vBA0c-JZAn).  
 ## Test
 ```sh
 python test_tener_ru.py --training_dataset conll2003ru-bio-super-distinct --testing_dataset conll2003ru-bio-super-distinct --model_file /home/dima/models/ner/bio  --subset dev
