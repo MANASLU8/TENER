@@ -11,6 +11,8 @@ def read_dataset(dataset, config):
       return read_conll_dataset('../data/conll2003ru-super-distinct', config)
   elif dataset == 'conll2003ru-bio-super-distinct':
       return read_conll_dataset('../data/conll2003ru-bio-super-distinct', config)
+  elif dataset == 'conll2003ru-big':
+      return read_conll_dataset('../data/conll2003ru-big', config)
   elif dataset == 'en-ontonotes':
       # 会使用这个文件夹下的train.txt, test.txt, dev.txt等文件
       paths = '../data/en-ontonotes/english'

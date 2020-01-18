@@ -26,7 +26,7 @@ python predict_tener_ru.py --training_dataset conll2003ru-bio-super-distinct --p
 ```
 ## Predict on raw text
 ```sh
-python extract_ner.py --input raw/text.txt --output predictions.txt
+python extract_entities_ru.py --input raw/text.txt --output predictions.txt
 ```
 ## TENER: Adapting Transformer Encoder for Named Entity Recognition
 

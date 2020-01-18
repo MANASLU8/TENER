@@ -7,7 +7,7 @@ from java_wrapper import extract_dependencies_via_stanford
 structure_stanford_results = __import__('structure-stanford-results')
 
 TMP_DATASET_DIR = 'tmp/conll2003ru-predicted'
-DATASET = 'conll2003ru-bio-super-distinct'
+DATASET = 'conll2003ru-big'
 
 def extract(input_file, output_file):
     print("Extracting dependencies...")
@@ -32,15 +32,15 @@ def extract(input_file, output_file):
     # Make predictions
     predict(
         config = get_config(DATASET),
-        model_path = '/home/dima/models/ner/bio',
+        model_path = '/home/dima/models/ner/big',
         training_dataset = DATASET,
         prediction_dataset = TMP_DATASET_DIR,
         prediction_subset = 'dev',
         output_path = output_file
     )
     
-    rmtree(TMP_DATASET_DIR)
-    os.remove(f'{input_file.split("/")[-1]}.out')
+    #rmtree(TMP_DATASET_DIR)
+    #os.remove(f'{input_file.split("/")[-1]}.out')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
