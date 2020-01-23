@@ -9,6 +9,8 @@ parser.add_argument('--output', type=str, default='/home/dima/tener/src/tmp/outp
 
 args = parser.parse_args()
 
+DEFAULT_POS = 'None'
+
 def decode_dependency(dependency, pos_tags):
 	#print(dependency)
 	pair = dependency.split(', ')
@@ -100,9 +102,10 @@ def structure_stanford_output(input_file, output_file):
 			# 	'tokens': ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')])),
 			# 	'dependencies': list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:]))
 			# })
-			sentences.append(list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:])))
+			#print(list(map(lambda i: ['ROOT'] + list(map(lambda token: f"-{len(token.split('PartOfSpeech='))}- {token.split('PartOfSpeech=')}", sentence[:sentence.index('')])), sentence[sentence.index('') + 2:])))
+			sentences.append(list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: (token.split('PartOfSpeech=')[1] if len(token.split('PartOfSpeech=')) >= 2 else DEFAULT_POS).replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:])))
 			sentence = []
-	sentence = sentence[3:-1]
+	sentence = sentence[3:]
 	sentences.append(list(map(lambda i: decode_dependency(i, ['ROOT'] + list(map(lambda token: token.split('PartOfSpeech=')[1].replace(']', ''), sentence[:sentence.index('')]))), sentence[sentence.index('') + 2:])))
 	#print(sentences[-1])
 	#print(len(sentences))

@@ -28,6 +28,10 @@ python predict_tener_ru.py --training_dataset conll2003ru-bio-super-distinct --p
 ```sh
 python extract_entities_ru.py --input raw/text.txt --output predictions.txt
 ```
+## Predict on labelled text
+```sh
+python predict_tener_ru.py --training_dataset conll2003ru-big --prediction_dataset ../../ner-comparison/eval.tagged.txt --model_file /home/dima/model/big --output_file ../../ner-comparison/eval.tagged.tener.txt
+```
 ## TENER: Adapting Transformer Encoder for Named Entity Recognition
 
 

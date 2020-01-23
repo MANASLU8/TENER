@@ -164,9 +164,10 @@ class TENER(nn.Module):
             continue
           words = sentence[words_sequence_index]
           #print(sentence[labels_sequence_index])
-          labels = map(lambda label: f'{targets.to_word(label).split("-")[-1]}', sentence[labels_sequence_index][0])
+          #labels = map(lambda label: f'{targets.to_word(label).split("-")[-1]}', sentence[labels_sequence_index][0])
+          labels = map(lambda label: f'{targets.to_word(label)}', sentence[labels_sequence_index][0])
           for pair in zip(words, labels):
-            lines.append('\t'.join(pair))
+            lines.append(' '.join(pair))
           lines.append('')
         if filename is not None:
             write_lines(filename, lines)
