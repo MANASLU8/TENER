@@ -4,6 +4,16 @@ ru:
   - conll2003ru-super-distinct
   - conll2003ru-bio-super-distinct
   - conll2003ru-big
+  - conll2003rucv-01
+  - conll2003rucv-02
+  - conll2003rucv-03
+  - conll2003rucv-04
+  - conll2003rucv-05
+  - conll2003rucv-06
+  - conll2003rucv-07
+  - conll2003rucv-08
+  - conll2003rucv-09
+  - conll2003rucv-10
 conll:
   - conll2003
   - conll2003ru
@@ -11,5 +21,15 @@ conll:
   - conll2003ru-super-distinct
   - conll2003ru-bio-super-distinct
   - conll2003ru-big
+  - conll2003rucv-01
+  - conll2003rucv-02
+  - conll2003rucv-03
+  - conll2003rucv-04
+  - conll2003rucv-05
+  - conll2003rucv-06
+  - conll2003rucv-07
+  - conll2003rucv-08
+  - conll2003rucv-09
+  - conll2003rucv-10
 others:
   - en-ontonotes

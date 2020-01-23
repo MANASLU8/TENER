@@ -5,6 +5,9 @@ CONFIG_PATH = 'config.yaml'
 DATASETS_PATH = 'datasets.yaml'
 
 def _get_dataset_dependent_params(dataset):
+    #print(dataset)
+    #print(datasets)
+    dataset = dataset.split('/')[-1]
     if dataset in datasets['conll']:
         return {
             'n_heads': 14,
