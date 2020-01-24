@@ -107,15 +107,8 @@ class TENER(nn.Module):
         trainer.train(load_best_model=False)
 
     def load(self, path):
-        trainer = self._get_trainer('/'.join(path.split('/')[:-1]))
-
-        load_succeed = trainer._load_model(self, path.split('/')[-1])
-
-        if load_succeed:
-            print("Reloaded trained model.")
-        else:
-            print("Fail to reload trained model.")
-
+        self.load_state_dict(torch.load(path).state_dict())
+        print("Reloaded trained model.")
         return self
 
     def test(self, dataset, subset):
