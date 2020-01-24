@@ -10,7 +10,7 @@ def predict(config, model_path, training_dataset, prediction_dataset, prediction
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--training_dataset', type=str, default='en-ontonotes', choices=get_valid_dataset_names())
+    parser.add_argument('--training_dataset', type=str, default='en-ontonotes')
     parser.add_argument('--prediction_dataset', type=str, default='tmp/conll2003ru-predicted')
     parser.add_argument('--model_file', type=str, default='/home/dima/models/ner/bio')
     parser.add_argument('--output_file', type=str, default='predictions.txt')
